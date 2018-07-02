@@ -53,6 +53,7 @@ require('./models/enduser/thumbs_up');
 require('./models/enduser/thumbs_down');
 require('./models/enduser/counter');
 
+var mongoose = require('mongoose');
 var passport = require('passport');
 const route = require('./route');
 require('./config/passport');
@@ -116,6 +117,8 @@ var initDb = function(callback) {
 
     console.log('Connected to MongoDB at: %s', mongoURL);
   });
+  
+  mongoose.connect(mongoURL);
 };
 
 
