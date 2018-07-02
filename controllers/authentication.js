@@ -6,7 +6,7 @@ var Otp = mongoose.model('Otp');
 var Counter = mongoose.model('Counter');
 
 module.exports.register = function(req, res) {
-	res.json({results: req.body})
+	//res.json({results: req.body})
 	var query_otp = {};
 	query_otp.mobile = {"$eq":req.body.mobile};
 	query_otp.otp = {"$eq":req.body.otp};
