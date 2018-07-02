@@ -60,13 +60,17 @@ require('./config/passport');
 
 var bodyparser = require('body-parser');
 var cors = require('cors');
+var path = require('path');
 
 app.use(cors());
 app.use(bodyparser.json({limit: '50mb'}));
 app.use(bodyparser.urlencoded({limit: '50mb', extended: true}));
 
+app.use(express.static(path.join(__dirname, 'views')));
+
 app.use(passport.initialize());
 app.use('/api',route);
+
 
 
 var port = process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 8080,
