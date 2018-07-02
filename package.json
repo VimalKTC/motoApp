@@ -1,5 +1,5 @@
 {
-  "name": "myapp",
+  "name": "motoapp",
   "version": "1.0.0",
   "description": "Vehicle dealer app",
   "main": "server.js",
@@ -36,12 +36,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/VimalKTC/test.git"
+    "url": "https://github.com/MotoClique/motoApp.git"
   },
-  "author": "MAV <vimal.ktc@gmail.com>",
+  "author": "MAV <motoclique123@gmail.com>",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/VimalKTC/test/issues"
+    "url": "https://github.com/MotoClique/motoApp/issues"
   },
-  "homepage": "https://github.com/VimalKTC/test"
+  "homepage": "https://github.com/MotoClique/motoApp"
 }
