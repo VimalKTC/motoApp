@@ -11,6 +11,7 @@ module.exports.register = function(req, res) {
 	var query_otp = {};
 	query_otp.mobile = {"$eq":req.body.mobile};
 	query_otp.otp = {"$eq":req.body.otp};
+	console.log(Otp);
 	Otp.find(query_otp,function(err_otp, otps){
 		console.log(err_otp);
 		console.log(otps);
