@@ -9,7 +9,6 @@ var auth = jwt({
 // authentication
 //require('./models/users');
 var ctrlAuth = require('./controllers/authentication');
-router.post('/test', function(req,res){res.json({results: req.body});});
 router.post('/register', ctrlAuth.register);
 router.post('/login', ctrlAuth.login);
 

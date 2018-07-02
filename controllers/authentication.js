@@ -7,18 +7,23 @@ var Counter = mongoose.model('Counter');
 
 module.exports.register = function(req, res) {
 	//res.json({results: req.body})
+	console.log(req.body);
 	var query_otp = {};
 	query_otp.mobile = {"$eq":req.body.mobile};
 	query_otp.otp = {"$eq":req.body.otp};
 	Otp.find(query_otp,function(err_otp, otps){
+		console.log(err_otp);
+		console.log(otps);
 		if(err_otp){
 			res.json({"statusCode":"F","msg":"Unable to validate OTP.","error":err_otp});
 		}
 		//else if(otps.length>0){
 		else if(true){
+			console.log('register now');
 				//Register Here
 				var user_id = "1000";
 				Counter.getNextSequenceValue('user',function(sequence){
+					console.log(sequence);
 					if(sequence){
 							  var index_count = sequence.sequence_value;
 						
