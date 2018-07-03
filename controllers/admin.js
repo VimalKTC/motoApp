@@ -33,10 +33,11 @@ module.exports.profileRead = function(req,res){//Fetch
 		Profile.find(query,function(profile_err, profiles){
 			if(profiles.length > 0){
 				var result = JSON.parse(JSON.stringify(profiles));
+				console.log(result);
 				result[0].screenAccess = [];
 				UserSubMap.find({user_id: {"$regex":result[0].user_id, "$options":"i"}},function(sub_err, subs){
 					if(sub_err){
-						res.json({results: result,error: sub_err});		
+						res.json({statusCode:"F", msg:"Failed to retrieve user subscription", results: result,error: sub_err});		
 					}
 					var role_query = [];
 					for(var i =0; i < subs.length; i++){
@@ -54,18 +55,18 @@ module.exports.profileRead = function(req,res){//Fetch
 					var AppScrFieldsRights = mongoose.model('AppScrFieldsRights');
 					AppScrFieldsRights.find({ $and: screen_query},function(screen_err, screens){
 						if(screen_err){
-							res.json({results: result,error: screen_err});		
+							res.json({statusCode:"F", msg:"Failed to retrieve rights", results: result,error: screen_err});		
 						}
 						
 						for(var i =0; i < screens.length; i++){
 							result[0].screenAccess.push({name: screens[i].screen, for_nav: screens[i].screen_for_nav, sequence: screens[i].screen_sequence, applicable: screens[i].applicable, create: screens[i].create, edit: screens[i].edit});
 						}
-						res.json({results: result,error: screen_err});						
+						res.json({statusCode:"S", msg:"Successfully retrieved." results: result,error: screen_err});						
 					});	
 				});
 			}
 			else{
-					res.json({results: profiles,error: profile_err});
+					res.json({statusCode:"F", msg:"Failed to retrieve the profile", results: profiles,error: profile_err});
 			}			
 		});
 	}
