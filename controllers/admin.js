@@ -61,7 +61,7 @@ module.exports.profileRead = function(req,res){//Fetch
 						for(var i =0; i < screens.length; i++){
 							result[0].screenAccess.push({name: screens[i].screen, for_nav: screens[i].screen_for_nav, sequence: screens[i].screen_sequence, applicable: screens[i].applicable, create: screens[i].create, edit: screens[i].edit});
 						}
-						res.json({statusCode:"S", msg:"Successfully retrieved." results: result,error: screen_err});						
+						res.json({statusCode:"S", msg:"Successfully retrieved.", results: result,error: screen_err});						
 					});	
 				});
 			}
