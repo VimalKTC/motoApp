@@ -43,7 +43,7 @@ module.exports.register = function(req, res) {
 										user_id: user_id,
 										admin: req.body.admin,
 										mobile: req.body.mobile,
-										name: "",
+										name: (req.body.admin==='S' || req.body.admin==='A')?("A"+user_id):"",
 										gender: "",
 										email: "",
 										currency: "",
@@ -57,16 +57,17 @@ module.exports.register = function(req, res) {
 										changedAt: at
 									});
 									
-									newUserProfile.save((err, user)=>{
+									newUserProfile.save((profile_err, profile_user)=>{
+										var token;
+										token = user.generateJwt();
+										res.status(200);
+										res.json({
+										  "token" : token,
+										  "statusCode": "S",
+										  "results": result
+										});
 									});
-									var token;
-									token = user.generateJwt();
-									res.status(200);
-									res.json({
-									  "token" : token,
-									  "statusCode": "S",
-									  "results": result
-									});
+									
 								  }
 							  });
 					}

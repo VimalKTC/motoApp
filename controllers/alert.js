@@ -2,6 +2,7 @@
 const async = require("async");
 const request = require('request');
 var mongoose = require('mongoose');
+var Counter = mongoose.model('Counter');
 
 //////////////////////////User Alerts////////////////////////////////
 const UserAlert = mongoose.model('UserAlert');
@@ -25,54 +26,52 @@ module.exports.getUserAlert = function(req,res){//Fetch
 	});
 };
 module.exports.addUserAlert = function(req,res){//Add New
-	var alert_id = "1";
-	var command = UserAlert.find().sort({"alert_id":-1}).limit(1);
-	command.exec(function(err, maxValue) 
-	{	
-		if(maxValue.length && maxValue.length > 0){
-			alert_id = "ALERT_"+(alert_id - (- (maxValue[0].alert_id).substr(6)));
+	var alert_id = "0";
+	Counter.getNextSequenceValue('alert',function(sequence){
+		if(sequence){
+			var index_count = sequence.sequence_value;
+			var d = new Date();
+			var at = d.getDate() +"/"+ (d.getMonth() - (-1)) +"/"+ d.getFullYear() ;
+			let newUserAlert = new UserAlert({
+				user_id: req.body.user_id,
+				alert_id: alert_id - (-index_count),
+				bid_sell_buy: req.body.bid_sell_buy,
+				individual_dealer: req.body.individual_dealer,
+				product_type_name: req.body.product_type_name,
+				brand_name: req.body.brand_name,
+				model: req.body.model,
+				variant: req.body.variant,
+				fuel_type: req.body.fuel_type,
+				city: req.body.city,
+				price_from: req.body.price_from,
+				price_to: req.body.price_to,
+				km_run_from: req.body.km_run_from,
+				km_run_to: req.body.km_run_to,
+				year_of_reg_from: req.body.year_of_reg_from,
+				year_of_reg_to: req.body.year_of_reg_to,
+				sms: req.body.sms,
+				email: req.body.email,
+				app: req.body.app,
+				active: req.body.active,
+				deleted: req.body.deleted,
+				createdBy: req.payload.user_id,
+				createdAt: at,
+				changedBy: req.payload.user_id,
+				changedAt: at
+			});
+			
+			newUserAlert.save((err, result)=>{
+				if(err){
+					res.json({statusCode: 'F', msg: 'Failed to add', error: err});
+				}
+				else{
+					res.json({statusCode: 'S', msg: 'Entry added', result: result});
+				}
+			});
 		}
 		else{
-			alert_id = "ALERT_1";
+			res.json({statusCode: 'F', msg: 'Unable to generate sequence number.'});
 		}
-		var d = new Date();
-		var at = d.getDate() +"/"+ (d.getMonth() - (-1)) +"/"+ d.getFullYear() ;
-		let newUserAlert = new UserAlert({
-			user_id: req.body.user_id,
-			alert_id: alert_id,
-			bid_sell_buy: req.body.bid_sell_buy,
-			individual_dealer: req.body.individual_dealer,
-			product_type_name: req.body.product_type_name,
-			brand_name: req.body.brand_name,
-			model: req.body.model,
-			variant: req.body.variant,
-			fuel_type: req.body.fuel_type,
-			city: req.body.city,
-			price_from: req.body.price_from,
-			price_to: req.body.price_to,
-			km_run_from: req.body.km_run_from,
-			km_run_to: req.body.km_run_to,
-			year_of_reg_from: req.body.year_of_reg_from,
-			year_of_reg_to: req.body.year_of_reg_to,
-			sms: req.body.sms,
-			email: req.body.email,
-			app: req.body.app,
-			active: req.body.active,
-			deleted: req.body.deleted,
-			createdBy: req.payload.user_id,
-			createdAt: at,
-			changedBy: req.payload.user_id,
-			changedAt: at
-		});
-		
-		newUserAlert.save((err, result)=>{
-			if(err){
-				res.json({statusCode: 'F', msg: 'Failed to add', error: err});
-			}
-			else{
-				res.json({statusCode: 'S', msg: 'Entry added', result: result});
-			}
-		});
 	});
 };
 module.exports.updateUserAlert = function(req,res){//Update

@@ -5,6 +5,7 @@ const request = require('request');
 var mongoose = require('mongoose');
 var User = mongoose.model('User');
 var UserSubMap = mongoose.model('UserSubMap');
+var Counter = mongoose.model('Counter');
 
 //////////////////////////Users Profile Master Table////////////////////////////////
 var Profile = mongoose.model('Profile');
@@ -269,36 +270,34 @@ module.exports.getApplication= function(req,res){//Fetch
 	});
 };
 module.exports.addApplication = function(req,res){//Add New
-	var app_id = "1";
-	var command = Application.find().sort({"app_id":-1}).limit(1);
-	command.exec(function(err, maxValue) 
-	{	
-		if(maxValue.length && maxValue.length > 0){
-			app_id = "APP_"+(app_id - (- (maxValue[0].app_id).substr(4)));
+	var app_id = "0";
+	Counter.getNextSequenceValue('application',function(sequence){
+		if(sequence){
+			var index_count = sequence.sequence_value;
+			var d = new Date();
+			var at = d.getDate() +"/"+ (d.getMonth() - (-1)) +"/"+ d.getFullYear() ;
+			let newApplication = new Application({
+				app_id: "APP_"+(app_id - (-index_count)),
+				app_name: req.body.app_name,
+				deleted: req.body.deleted,
+				createdBy: req.body.createdBy,
+				createdAt: at,
+				changedBy: req.body.changedBy,
+				changedAt: at
+			});
+			
+			newApplication.save((err, application)=>{
+				if(err){
+					res.json({statusCode: 'F', msg: 'Failed to add', error: err});
+				}
+				else{
+					res.json({statusCode: 'S', msg: 'Entry added', application: application});
+				}
+			});
 		}
 		else{
-			app_id = "APP_1";
+			res.json({statusCode: 'F', msg: 'Unable to generate sequence number.'});
 		}
-		var d = new Date();
-		var at = d.getDate() +"/"+ (d.getMonth() - (-1)) +"/"+ d.getFullYear() ;
-		let newApplication = new Application({
-			app_id: app_id,
-			app_name: req.body.app_name,
-			deleted: req.body.deleted,
-			createdBy: req.body.createdBy,
-			createdAt: at,
-			changedBy: req.body.changedBy,
-			changedAt: at
-		});
-		
-		newApplication.save((err, application)=>{
-			if(err){
-				res.json({statusCode: 'F', msg: 'Failed to add', error: err});
-			}
-			else{
-				res.json({statusCode: 'S', msg: 'Entry added', application: application});
-			}
-		});
 	});
 };
 
@@ -351,36 +350,34 @@ module.exports.getRole = function(req,res){//Fetch
 	});
 };
 module.exports.addRole = function(req,res){//Add New
-	var role_id = "1";
-	var command = Role.find().sort({"role_id":-1}).limit(1);
-	command.exec(function(err, maxValue) 
-	{	
-		if(maxValue.length && maxValue.length > 0){
-			role_id = "ROLE_"+(role_id - (- (maxValue[0].role_id).substr(5)));
+	var role_id = "0";
+	Counter.getNextSequenceValue('role',function(sequence){
+		if(sequence){
+			var index_count = sequence.sequence_value;
+			var d = new Date();
+			var at = d.getDate() +"/"+ (d.getMonth() - (-1)) +"/"+ d.getFullYear() ;
+			let newRole = new Role({
+				role_id: "ROLE_"+(role_id - (-index_count)),
+				role_name: req.body.role_name,
+				deleted:false,
+				createdBy:"",
+				createdAt: at,
+				changedBy:"",
+				changedAt: at
+			});
+			
+			newRole.save((err, role)=>{
+				if(err){
+					res.json({statusCode: 'F', msg: 'Failed to add', error: err});
+				}
+				else{
+					res.json({statusCode: 'S', msg: 'Entry added', role: role});
+				}
+			});
 		}
 		else{
-			role_id = "ROLE_1";
+			res.json({statusCode: 'F', msg: 'Unable to generate sequence number.'});
 		}
-		var d = new Date();
-		var at = d.getDate() +"/"+ (d.getMonth() - (-1)) +"/"+ d.getFullYear() ;
-		let newRole = new Role({
-			role_id: role_id,
-			role_name: req.body.role_name,
-			deleted:false,
-			createdBy:"",
-			createdAt: at,
-			changedBy:"",
-			changedAt: at
-		});
-		
-		newRole.save((err, role)=>{
-			if(err){
-				res.json({statusCode: 'F', msg: 'Failed to add', error: err});
-			}
-			else{
-				res.json({statusCode: 'S', msg: 'Entry added', role: role});
-			}
-		});
 	});
 };
 
@@ -443,50 +440,48 @@ module.exports.getSubscription = function(req,res){//Fetch
 	});
 };
 module.exports.addSubscription = function(req,res){//Add New
-	var subscription_id = "1";
-	var command = Subscription.find().sort({"subscription_id":-1}).limit(1);
-	command.exec(function(err, maxValue) 
-	{	
-		if(maxValue.length && maxValue.length > 0){
-			subscription_id = "SUBSCR_"+(subscription_id - (- (maxValue[0].subscription_id).substr(7)));
+	var subscription_id = "0";
+	Counter.getNextSequenceValue('subscription',function(sequence){
+		if(sequence){
+			var index_count = sequence.sequence_value;
+			var d = new Date();
+			var at = d.getDate() +"/"+ (d.getMonth() - (-1)) +"/"+ d.getFullYear() ;
+			let newSubscription = new Subscription({
+				subscription_id: "SUBSCR_"+(subscription_id - (-index_count)),
+				app_name: req.body.app_name,
+				subscription_name: req.body.subscription_name,
+				role_id: req.body.role_id,
+				validity_unit: req.body.validity_unit,
+				validity_period: req.body.validity_period,
+				amount: req.body.amount,
+				currency: req.body.currency,
+				post_allowed: req.body.post_allowed,
+				post_day: req.body.post_day,
+				post_priority: req.body.post_priority,
+				featureOnTop: req.body.featureOnTop,
+				getHighlighted: req.body.getHighlighted,
+				notification_sms: req.body.notification_sms,
+				notification_email: req.body.notification_email,
+				notification_app: req.body.notification_app,
+				createdBy: req.body.createdBy,
+				createdAt: at,
+				changedBy: req.body.changedBy,
+				changedAt: at,
+				deleted: req.body.deleted
+			});
+			
+			newSubscription.save((err, subscription)=>{
+				if(err){
+					res.json({statusCode: 'F', msg: 'Failed to add', error: err});
+				}
+				else{
+					res.json({statusCode: 'S', msg: 'Entry added', subscription: subscription});
+				}
+			});
 		}
 		else{
-			subscription_id = "SUBSCR_1";
+			res.json({statusCode: 'F', msg: 'Unable to generate sequence number.'});
 		}
-		var d = new Date();
-		var at = d.getDate() +"/"+ (d.getMonth() - (-1)) +"/"+ d.getFullYear() ;
-		let newSubscription = new Subscription({
-			subscription_id: subscription_id,
-			app_name: req.body.app_name,
-			subscription_name: req.body.subscription_name,
-			role_id: req.body.role_id,
-			validity_unit: req.body.validity_unit,
-			validity_period: req.body.validity_period,
-			amount: req.body.amount,
-			currency: req.body.currency,
-			post_allowed: req.body.post_allowed,
-			post_day: req.body.post_day,
-			post_priority: req.body.post_priority,
-			featureOnTop: req.body.featureOnTop,
-			getHighlighted: req.body.getHighlighted,
-			notification_sms: req.body.notification_sms,
-			notification_email: req.body.notification_email,
-			notification_app: req.body.notification_app,
-			createdBy: req.body.createdBy,
-			createdAt: at,
-			changedBy: req.body.changedBy,
-			changedAt: at,
-			deleted: req.body.deleted
-		});
-		
-		newSubscription.save((err, subscription)=>{
-			if(err){
-				res.json({statusCode: 'F', msg: 'Failed to add', error: err});
-			}
-			else{
-				res.json({statusCode: 'S', msg: 'Entry added', subscription: subscription});
-			}
-		});
 	});
 };
 module.exports.updateSubscription = function(req,res){//Update
@@ -925,36 +920,34 @@ module.exports.getProductTyp = function(req,res){//Fetch
 	});
 };
 module.exports.addProductTyp = function(req,res){//Add New
-	var product_type_id = "1";
-	var command = ProductTyp.find().sort({"product_type_id":-1}).limit(1);
-	command.exec(function(err, maxValue) 
-	{	
-		if(maxValue.length && maxValue.length > 0){
-			product_type_id = "PRDTYP_"+(product_type_id - (- (maxValue[0].product_type_id).substr(7)));
+	var product_type_id = "0";
+	Counter.getNextSequenceValue('product_type',function(sequence){
+		if(sequence){
+			var index_count = sequence.sequence_value;
+			var d = new Date();
+			var at = d.getDate() +"/"+ (d.getMonth() - (-1)) +"/"+ d.getFullYear() ;
+			let newProductTyp = new ProductTyp({
+				product_type_id: "PRDTYP_"+(product_type_id - (-index_count)),
+				product_type_name: req.body.product_type_name,
+				deleted: req.body.deleted,
+				createdBy: req.payload.user_id,
+				createdAt: at,
+				changedBy: req.payload.user_id,
+				changedAt: at
+			});
+			
+			newProductTyp.save((err, productTyp)=>{
+				if(err){
+					res.json({statusCode: 'F', msg: 'Failed to add', error: err});
+				}
+				else{
+					res.json({statusCode: 'S', msg: 'Entry added', productTyp: productTyp});
+				}
+			});
 		}
 		else{
-			product_type_id = "PRDTYP_1";
+			res.json({statusCode: 'F', msg: 'Unable to generate sequence number.'});
 		}
-		var d = new Date();
-		var at = d.getDate() +"/"+ (d.getMonth() - (-1)) +"/"+ d.getFullYear() ;
-		let newProductTyp = new ProductTyp({
-			product_type_id: product_type_id,
-			product_type_name: req.body.product_type_name,
-			deleted: req.body.deleted,
-			createdBy: req.payload.user_id,
-			createdAt: at,
-			changedBy: req.payload.user_id,
-			changedAt: at
-		});
-		
-		newProductTyp.save((err, productTyp)=>{
-			if(err){
-				res.json({statusCode: 'F', msg: 'Failed to add', error: err});
-			}
-			else{
-				res.json({statusCode: 'S', msg: 'Entry added', productTyp: productTyp});
-			}
-		});
 	});
 };
 
@@ -1012,39 +1005,37 @@ module.exports.getProductHierarchy = function(req,res){//Fetch
 	});
 };
 module.exports.addProductHierarchy = function(req,res){//Add New
-	var product_hierarchy_id = "1";
-	var command = ProductHierarchy.find().sort({"product_hierarchy_id":-1}).limit(1);
-	command.exec(function(err, maxValue) 
-	{	
-		if(maxValue.length && maxValue.length > 0){
-			product_hierarchy_id = "PRDHIER_"+(product_hierarchy_id - (- (maxValue[0].product_hierarchy_id).substr(8)));
+	var product_hierarchy_id = "0";
+	Counter.getNextSequenceValue('prdHierarchy',function(sequence){
+		if(sequence){
+			var index_count = sequence.sequence_value;
+			var d = new Date();
+			var at = d.getDate() +"/"+ (d.getMonth() - (-1)) +"/"+ d.getFullYear() ;
+			let newProductHierarchy = new ProductHierarchy({
+				parent_product_hierarchy_id: req.body.parent_product_hierarchy_id,
+				product_hierarchy_id: "PRDHIERARCHY_"+(product_hierarchy_id - (-index_count)),
+				product_type_id: req.body.product_type_id,
+				product_type_name: req.body.product_type_name,
+				child_product_hierarchy_id: req.body.child_product_hierarchy_id,
+				deleted: req.body.deleted,
+				createdBy: req.payload.user_id,
+				createdAt: at,
+				changedBy: req.payload.user_id,
+				changedAt: at
+			});
+			
+			newProductHierarchy.save((err, productHierarchy)=>{
+				if(err){
+					res.json({statusCode: 'F', msg: 'Failed to add', error: err});
+				}
+				else{
+					res.json({statusCode: 'S', msg: 'Entry added', productHierarchy: productHierarchy});
+				}
+			});
 		}
 		else{
-			product_hierarchy_id = "PRDHIER_1";
+			res.json({statusCode: 'F', msg: 'Unable to generate sequence number.'});
 		}
-		var d = new Date();
-		var at = d.getDate() +"/"+ (d.getMonth() - (-1)) +"/"+ d.getFullYear() ;
-		let newProductHierarchy = new ProductHierarchy({
-			parent_product_hierarchy_id: req.body.parent_product_hierarchy_id,
-			product_hierarchy_id: product_hierarchy_id,
-			product_type_id: req.body.product_type_id,
-			product_type_name: req.body.product_type_name,
-			child_product_hierarchy_id: req.body.child_product_hierarchy_id,
-			deleted: req.body.deleted,
-			createdBy: req.payload.user_id,
-			createdAt: at,
-			changedBy: req.payload.user_id,
-			changedAt: at
-		});
-		
-		newProductHierarchy.save((err, productHierarchy)=>{
-			if(err){
-				res.json({statusCode: 'F', msg: 'Failed to add', error: err});
-			}
-			else{
-				res.json({statusCode: 'S', msg: 'Entry added', productHierarchy: productHierarchy});
-			}
-		});
 	});
 };
 
@@ -1127,36 +1118,34 @@ module.exports.getSpecField = function(req,res){//Fetch
 	});
 };
 module.exports.addSpecField = function(req,res){//Add New
-	var specification_field_id = "1";
-	var command = SpecField.find().sort({"specification_field_id":-1}).limit(1);
-	command.exec(function(err, maxValue) 
-	{	
-		if(maxValue.length && maxValue.length > 0){
-			specification_field_id = "SPEC_"+(specification_field_id - (- (maxValue[0].specification_field_id).substr(5)));
+	var specification_field_id = "0";
+	Counter.getNextSequenceValue('specification_field',function(sequence){
+		if(sequence){
+			var index_count = sequence.sequence_value;
+			var d = new Date();
+			var at = d.getDate() +"/"+ (d.getMonth() - (-1)) +"/"+ d.getFullYear() ;
+			let newSpecField = new SpecField({
+				specification_field_id: "SPECFIELD_"+(specification_field_id - (-index_count)),
+				specification_field_name: req.body.specification_field_name,
+				deleted: req.body.deleted,
+				createdBy: req.payload.user_id,
+				createdAt: at,
+				changedBy: req.payload.user_id,
+				changedAt: at
+			});
+			
+			newSpecField.save((err, specField)=>{
+				if(err){
+					res.json({statusCode: 'F', msg: 'Failed to add', error: err});
+				}
+				else{
+					res.json({statusCode: 'S', msg: 'Entry added', specField: specField});
+				}
+			});
 		}
 		else{
-			specification_field_id = "SPEC_1";
+			res.json({statusCode: 'F', msg: 'Unable to generate sequence number.'});
 		}
-		var d = new Date();
-		var at = d.getDate() +"/"+ (d.getMonth() - (-1)) +"/"+ d.getFullYear() ;
-		let newSpecField = new SpecField({
-			specification_field_id: specification_field_id,
-			specification_field_name: req.body.specification_field_name,
-			deleted: req.body.deleted,
-			createdBy: req.payload.user_id,
-			createdAt: at,
-			changedBy: req.payload.user_id,
-			changedAt: at
-		});
-		
-		newSpecField.save((err, specField)=>{
-			if(err){
-				res.json({statusCode: 'F', msg: 'Failed to add', error: err});
-			}
-			else{
-				res.json({statusCode: 'S', msg: 'Entry added', specField: specField});
-			}
-		});
 	});
 };
 
@@ -1295,36 +1284,34 @@ module.exports.getBrand = function(req,res){//Fetch
 	});
 };
 module.exports.addBrand = function(req,res){//Add New
-	var brand_id = "1";
-	var command = Brand.find().sort({"brand_id":-1}).limit(1);
-	command.exec(function(err, maxValue) 
-	{	
-		if(maxValue.length && maxValue.length > 0){
-			brand_id = "BRAND_"+(brand_id - (- (maxValue[0].brand_id).substr(6)));
+	var brand_id = "0";
+	Counter.getNextSequenceValue('brand',function(sequence){
+		if(sequence){
+			var index_count = sequence.sequence_value;
+			var d = new Date();
+			var at = d.getDate() +"/"+ (d.getMonth() - (-1)) +"/"+ d.getFullYear() ;
+			let newBrand = new Brand({
+				brand_id: "BRAND_"+(brand_id - (-index_count)),
+				brand_name: req.body.brand_name,
+				deleted: req.body.deleted,
+				createdBy: req.payload.user_id,
+				createdAt: at,
+				changedBy: req.payload.user_id,
+				changedAt: at
+			});
+			
+			newBrand.save((err, brand)=>{
+				if(err){
+					res.json({statusCode: 'F', msg: 'Failed to add', error: err});
+				}
+				else{
+					res.json({statusCode: 'S', msg: 'Entry added', brand: brand});
+				}
+			});
 		}
 		else{
-			brand_id = "BRAND_1";
+			res.json({statusCode: 'F', msg: 'Unable to generate sequence number.'});
 		}
-		var d = new Date();
-		var at = d.getDate() +"/"+ (d.getMonth() - (-1)) +"/"+ d.getFullYear() ;
-		let newBrand = new Brand({
-			brand_id: brand_id,
-			brand_name: req.body.brand_name,
-			deleted: req.body.deleted,
-			createdBy: req.payload.user_id,
-			createdAt: at,
-			changedBy: req.payload.user_id,
-			changedAt: at
-		});
-		
-		newBrand.save((err, brand)=>{
-			if(err){
-				res.json({statusCode: 'F', msg: 'Failed to add', error: err});
-			}
-			else{
-				res.json({statusCode: 'S', msg: 'Entry added', brand: brand});
-			}
-		});
 	});
 };
 
@@ -1783,34 +1770,32 @@ module.exports.getPrdImage = function(req,res){//Fetch
 	});
 };
 module.exports.addPrdImage = function(req,res){//Add New
-	var image_id = "1";
-	var command = PrdImage.find().sort({"image_id":-1}).limit(1);
-	command.exec(function(err, maxValue) 
-	{	
-		if(maxValue.length && maxValue.length > 0){
-			image_id = "IMG_"+(image_id - (- (maxValue[0].image_id).substr(4)));
+	var image_id = "0";
+	Counter.getNextSequenceValue('prdImage',function(sequence){
+		if(sequence){
+			var index_count = sequence.sequence_value;
+			var buffr = new Buffer(req.body.data,'base64');
+			let newPrdImage = new PrdImage({
+				product_id: req.body.product_id,
+				data: buffr,
+				type: req.body.type,
+				name: req.body.name,
+				image_id: "PRDIMG_"+(image_id - (-index_count)),
+				default: req.body.default
+			});
+			
+			newPrdImage.save((err, prdImage)=>{
+				if(err){
+					res.json({statusCode: 'F', msg: 'Failed to add', error: err});
+				}
+				else{
+					res.json({statusCode: 'S', msg: 'Entry added', prdImage: prdImage});
+				}
+			});
 		}
 		else{
-			image_id = "IMG_1";
+			res.json({statusCode: 'F', msg: 'Unable to generate sequence number.'});
 		}
-		var buffr = new Buffer(req.body.data,'base64');
-		let newPrdImage = new PrdImage({
-			product_id: req.body.product_id,
-			data: buffr,
-			type: req.body.type,
-			name: req.body.name,
-			image_id: image_id,
-			default: req.body.default
-		});
-		
-		newPrdImage.save((err, prdImage)=>{
-			if(err){
-				res.json({statusCode: 'F', msg: 'Failed to add', error: err});
-			}
-			else{
-				res.json({statusCode: 'S', msg: 'Entry added', prdImage: prdImage});
-			}
-		});
 	});
 };
 
@@ -1849,26 +1834,34 @@ module.exports.deletePrdImage = function(req,res){//Delete
 
 module.exports.addMultiplePrdImage = function(req,res){//Add Multiple Images
 	var records = req.body.docs;
-	var image_id = '';
+	var image_id = '0';
 	docs.forEach(function(currentItem, index, arr){
 		var item = JSON.parse(JSON.stringify(currentItem));
 		var buffr = new Buffer(currentItem.data,'base64');
 		var prd_id = ""+ currentItem.product_type_name +"_"+ currentItem.brand_name +"_"+ currentItem.model +"_"+ currentItem.variant;
-		let newPrdImage = new PrdImage({
-			product_id: prd_id,
-			data: buffr,
-			type: currentItem.type,
-			name: currentItem.name,
-			image_id: image_id,
-			default: currentItem.default
-		});
-		
-		newPrdImage.save((err, prdImage)=>{
-			if(err){
-				res.json({statusCode: 'F', msg: 'Failed to add', error: err});
+		Counter.getNextSequenceValue('prdImage',function(sequence){
+			if(sequence){
+				var index_count = sequence.sequence_value;
+				let newPrdImage = new PrdImage({
+					product_id: prd_id,
+					data: buffr,
+					type: currentItem.type,
+					name: currentItem.name,
+					image_id: "PRDIMG_"+(image_id - (-index_count)),
+					default: currentItem.default
+				});
+				
+				newPrdImage.save((err, prdImage)=>{
+					if(err){
+						res.json({statusCode: 'F', msg: 'Failed to add', error: err});
+					}
+					else{
+						res.json({statusCode: 'S', msg: 'Entry added', results: prdImage});
+					}
+				});
 			}
 			else{
-				res.json({statusCode: 'S', msg: 'Entry added', results: prdImage});
+				res.json({statusCode: 'F', msg: 'Unable to generate sequence number.'});
 			}
 		});
 	});
