@@ -90,7 +90,11 @@ module.exports.login = function(req, res) {
 
     // If Passport throws/catches an error
     if (err) {
-      res.status(404).json(err);
+      res.status(404).json({
+		"statusCode": "F",
+		"token" : null,
+		"error": err
+      });
       return;
     }
 
@@ -99,11 +103,16 @@ module.exports.login = function(req, res) {
       token = user.generateJwt();
       res.status(200);
       res.json({
-        "token" : token
+		"statusCode": "S",
+		"token" : token
       });
     } else {
       // If user is not found
-      res.status(401).json(info);
+      res.status(401).json({
+		"statusCode": "F",
+		"token" : null,
+		"error": info
+      });
     }
   })(req, res);
 
