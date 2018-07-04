@@ -40,7 +40,7 @@ module.exports.register = function(req, res) {
 									var d = new Date();
 									var at = d.getDate() +"/"+ (d.getMonth() - (-1)) +"/"+ d.getFullYear() ;
 									let newUserProfile = new Profile({
-										user_id: user_id,
+										user_id: result.user_id,
 										admin: req.body.admin,
 										mobile: req.body.mobile,
 										name: (req.body.admin==='S' || req.body.admin==='A')?("A"+user_id):"",
@@ -58,8 +58,6 @@ module.exports.register = function(req, res) {
 									});
 									
 									newUserProfile.save((profile_err, profile_user)=>{
-										console.log(profile_err);
-										console.log(profile_user);
 										var token;
 										token = user.generateJwt();
 										res.status(200);
