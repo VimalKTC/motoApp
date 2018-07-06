@@ -147,9 +147,6 @@ app.get('/', function (req, res) {
   }
 });
 
-app.get('*', function (req, res) {
-    res.send('The * path accessed');
-});
 
 app.get('/pagecount', function (req, res) {
   // try to initialize the db on every request if it's not already
@@ -165,6 +162,27 @@ app.get('/pagecount', function (req, res) {
     res.send('{ pageCount: -1 }');
   }
 });
+
+app.get('*', function (req, res) {
+      // try to initialize the db on every request if it's not already
+      if (!db) {
+        initDb(function(err){});
+      }
+      if (db) {
+        var col = db.collection('counts');
+        // Create a document with request IP and current time of request
+        col.insert({ip: req.ip, date: Date.now()});
+        col.count(function(err, count){
+          if (err) {
+            console.log('Error running count. Message:\n'+err);
+          }
+          res.render('index.html', { pageCountMessage : count, dbInfo: dbDetails });
+        });
+      } else {
+        res.render('index.html', { pageCountMessage : null});
+      }
+});
+
 
 // error handling
 app.use(function(err, req, res, next){
