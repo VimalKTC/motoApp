@@ -1584,10 +1584,13 @@ module.exports.validateUploadData = function(req,res){//Validation
 	else if(req.body.docs.sheet === 'Image'){
 		docs.forEach(function(currentItem, index, arr){
 			var item = JSON.parse(JSON.stringify(currentItem));					
-			var prd_id = ""+ currentItem.product_type_name +"_"+ currentItem.brand_name +"_"+ currentItem.model +"_"+ currentItem.variant;
-			Product.find({product_id:{"$eq":prd_id}},function(product_err, product){
+			//var prd_id = ""+ currentItem.product_type_name +"_"+ currentItem.brand_name +"_"+ currentItem.model +"_"+ currentItem.variant;
+			Product.find({product_id:{"$eq": currentItem.product_id}},function(product_err, product){
 				if(product_err || product.length<1){
-					item.msg = 'Product does not exist.';
+					if(item.msg)
+						item.msg = item.msg + ', Product does not exist.';
+					else
+						item.msg = 'Product does not exist.';
 					hasDiscrepancy = true;
 				}
 						
@@ -1834,17 +1837,18 @@ module.exports.deletePrdImage = function(req,res){//Delete
 };
 
 module.exports.addMultiplePrdImage = function(req,res){//Add Multiple Images
+	var PrdThumbnail = mongoose.model('PrdThumbnail');
 	var records = req.body.docs;
 	var image_id = '0';
 	docs.forEach(function(currentItem, index, arr){
 		var item = JSON.parse(JSON.stringify(currentItem));
 		var buffr = new Buffer(currentItem.data,'base64');
-		var prd_id = ""+ currentItem.product_type_name +"_"+ currentItem.brand_name +"_"+ currentItem.model +"_"+ currentItem.variant;
+		//var prd_id = ""+ currentItem.product_type_name +"_"+ currentItem.brand_name +"_"+ currentItem.model +"_"+ currentItem.variant;
 		Counter.getNextSequenceValue('prdImage',function(sequence){
 			if(sequence){
 				var index_count = sequence.sequence_value;
 				let newPrdImage = new PrdImage({
-					product_id: prd_id,
+					product_id: currentItem.product_id,
 					data: buffr,
 					type: currentItem.type,
 					name: currentItem.name,
@@ -1857,7 +1861,22 @@ module.exports.addMultiplePrdImage = function(req,res){//Add Multiple Images
 						res.json({statusCode: 'F', msg: 'Failed to add', error: err});
 					}
 					else{
-						res.json({statusCode: 'S', msg: 'Entry added', results: prdImage});
+						var thumbnail_buffr = new Buffer(currentItem.thumbnail,'base64');
+						let newPrdThumbnail = new PrdThumbnail({
+							product_id: currentItem.product_id,
+							type: currentItem.type,
+							name: currentItem.name,
+							color: currentItem.color,
+							year_from: parseInt(currentItem.year_from),
+							year_to: parseInt(currentItem.year_to),
+							thumbnail: thumbnail_buffr,
+							image_id: prdImage[0].image_id,
+							default: currentItem.default
+						});
+						
+						newPrdThumbnail.save((err, prdThumbnail)=>{
+							res.json({statusCode: 'S', msg: 'Image uploaded', results: prdImage});
+						});
 					}
 				});
 			}
