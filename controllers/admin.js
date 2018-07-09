@@ -1861,21 +1861,26 @@ module.exports.addMultiplePrdImage = function(req,res){//Add Multiple Images
 						res.json({statusCode: 'F', msg: 'Failed to add', error: err});
 					}
 					else{
-						var thumbnail_buffr = new Buffer(currentItem.thumbnail,'base64');
-						let newPrdThumbnail = new PrdThumbnail({
-							product_id: currentItem.product_id,
-							type: currentItem.type,
-							name: currentItem.name,
-							color: currentItem.color,
-							year_from: parseInt(currentItem.year_from),
-							year_to: parseInt(currentItem.year_to),
-							thumbnail: thumbnail_buffr,
-							image_id: prdImage[0].image_id,
-							default: currentItem.default
-						});
+						var base64string = "data:"+currentItem.type+";base64,"+currentItem.data;
+						module.exports.resizeBase64Img(base64string, 100, 100,function(newImg){
+				  			var compressed = newImg.replace(/^data:image\/[a-z]+;base64,/, "");
 						
-						newPrdThumbnail.save((err, prdThumbnail)=>{
-							res.json({statusCode: 'S', msg: 'Image uploaded', results: prdImage});
+							var thumbnail_buffr = new Buffer(compressed,'base64');
+							let newPrdThumbnail = new PrdThumbnail({
+								product_id: currentItem.product_id,
+								type: currentItem.type,
+								name: currentItem.name,
+								color: currentItem.color,
+								year_from: parseInt(currentItem.year_from),
+								year_to: parseInt(currentItem.year_to),
+								thumbnail: thumbnail_buffr,
+								image_id: prdImage[0].image_id,
+								default: currentItem.default
+							});
+
+							newPrdThumbnail.save((err, prdThumbnail)=>{
+								res.json({statusCode: 'S', msg: 'Image uploaded', results: prdImage});
+							});
 						});
 					}
 				});
@@ -1887,6 +1892,22 @@ module.exports.addMultiplePrdImage = function(req,res){//Add Multiple Images
 	});
 			
 };
+
+module.exports.resizeBase64Img = function(base64, width, height, callback) {
+        var canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        var context = canvas.getContext("2d");
+        var img = new Image();
+        img.onload = function() {
+                        context.scale(width/img.width,  height/img.height);
+                        context.drawImage(img, 0, 0);
+                        var dataUrl = canvas.toDataURL(); 
+			callback(dataUrl);            
+  	};
+        img.src = base64;
+};
+
 
 
 //////////////////////////Product Thumbnail Table////////////////////////////////
