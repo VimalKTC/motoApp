@@ -17,6 +17,9 @@ var UserAlertSchema = new mongoose.Schema({
 	individual_dealer:{
 		type: String 
 	},
+	owner_type:{
+		type: String 
+	},
 	product_type_name:{
 		type: String 
 	},
@@ -32,13 +35,34 @@ var UserAlertSchema = new mongoose.Schema({
 	fuel_type:{
 		type: String 
 	},
+	color:{
+		type: String 
+	},
+	transmission:{
+		type: String 
+	},
+	country:{
+		type: String 
+	},
+	state:{
+		type: String 
+	},
 	city:{
+		type: String 
+	},
+	location:{
 		type: String 
 	},
 	price_from:{
 		type: String 
 	},
 	price_to:{
+		type: String 
+	},
+	discount_from:{
+		type: String 
+	},
+	discount_to:{
 		type: String 
 	},
 	km_run_from:{
