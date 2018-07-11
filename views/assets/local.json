@@ -74,13 +74,7 @@
 		{"name": "bid_status"},
 		{"name": "address"},
 		{"name": "pin_code"},
-		{"name": "locality"},
-		{"name": "min_km"},
-		{"name": "max_km"},
-		{"name": "min_year_of_reg"},
-		{"name": "max_year_of_reg"},
-		{"name": "min_net_price"},
-		{"name": "max_net_price"}
+		{"name": "locality"}
 	],
 	
 	"serviceName": [
