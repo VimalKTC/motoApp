@@ -162,7 +162,8 @@ module.exports.addBid = function(req,res){//Add New
 					doc.changedAt = at;
 					doc.createdBy = req.payload.user_id;
 					doc.changedBy = req.payload.user_id;
-					doc.active = "X";
+					if(doc.bid_status === 'Active')
+						doc.active = "X";
 					
 					//For testing purpose (to be removed)
 					if(doc.testing)
@@ -194,9 +195,14 @@ module.exports.addBid = function(req,res){//Add New
 								postLife = parseInt(result_sub[i].post_day);
 							}
 						}
-						var d = new Date();
+						/*var d = new Date();
 						d.setDate(d.getDate() - (- postLife));
-						doc.bid_valid_to = d.getDate() +"/"+ (d.getMonth() - (-1)) +"/"+ d.getFullYear();
+						doc.bid_valid_to = d.getDate() +"/"+ (d.getMonth() - (-1)) +"/"+ d.getFullYear();*/
+						if(!(doc.bid_valid_to) && doc.bid_status === 'Active'){
+							var d = new Date();							
+							doc.bid_valid_to = d.getDate() +"/"+ (d.getMonth() - (-1)) +"/"+ d.getFullYear();
+						}
+						
 						let newBid = new Bid(doc);
 						
 						newBid.save((err, result)=>{
@@ -248,10 +254,15 @@ module.exports.updateBid = function(req,res){//Update
 		delete doc.createdBy;
 		doc.changedBy = req.payload.user_id;
 		doc.changedAt = at;
+	if(doc.bid_status === 'Active')
+		doc.active = "X";
+	else
+		doc.active = "";
 		
 	if(doc.msg === 'D'){
 		d.setDate(d.getDate()-1);
 		doc.bid_valid_to = d.getDate() +"/"+ (d.getMonth() - (-1)) +"/"+ d.getFullYear();
+		doc.active = "";
 	}
 		
 	if(doc.current_bid_amount && !isNaN(doc.current_bid_amount)){
