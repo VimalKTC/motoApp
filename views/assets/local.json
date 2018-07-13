@@ -99,23 +99,54 @@
 		{"name":"Blue"},
 		{"name":"Green"},
 		{"name":"Metal Grey"},
+		{"name":"Yellow"},
+		{"name":"Orange"},
+		{"name":"Purple"},
+		{"name":"Magenta"},
+		{"name":"Cyan"},
+		{"name":"Lime"},
+		{"name":"Pink"},
+		{"name":"Teal"},
+		{"name":"Lavender"},
+		{"name":"Brown"},
+		{"name":"Beige"},
+		{"name":"Maroon"},
+		{"name":"Mint"},
+		{"name":"Olive"},
+		{"name":"Coral"},
+		{"name":"Navy Blue"},
+		{"name":"Grey"},
+		{"name":"Gold"},
+		{"name":"Wine Red"},
+		{"name":"Wheat"},
+		{"name":"Tan"},
+		{"name":"Khaki"},
+		{"name":"Royal Blue"},
 		{"name":"Others"}
 	],
 	
 	
 	"fuel_type": [
                   {"name": ""},
-				  {"name": "Petrol"},
+		  {"name": "Petrol"},
                   {"name": "Diesel"},
+		  {"name": "Electric"},
                   {"name": "LPG"}
                 ],
 	"body_type":[
-		{"name":"Solo"}
+		{"name":"Hatchback"},
+		{"name": "Sedan"},
+                  {"name": "MPV"},
+		  {"name": "SUV"},
+                  {"name": "Crossover"},	
+		{"name":"Coupe"},
+		{"name": "Convertible"}
 	],
 	
 	"transmission":[
 		{"name":"Manual"},
-		{"name":"Automatic"}
+		{"name":"Automatic"},
+		{"name":"AMT"}
 	],
 	
 	"owner_type": [
@@ -125,7 +156,7 @@
 	],
 	
 	"listing_by": [
-				  {"name": "Individual"},
+		  {"name": "Individual"},
                   {"name": "Dealer"}
                 ],
 	"bid_status": [
